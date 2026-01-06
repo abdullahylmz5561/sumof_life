@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abdullah Yılmaz | Photography</title>
+
+<style>
+:root{--bg:#0a0a0a;--accent:#fff;--gray:#888}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+
+html,body{
+    background:var(--bg);
+    color:var(--accent);
+    width:100%;
+    height:100%;
+    overflow-x:hidden;
+    overflow-y:hidden;
+}
+
+/* TRANSITION */
+#transition-overlay{
+    position:fixed;top:0;left:-100%;
+    width:100%;height:100%;
+    background:#111;z-index:9999;
+    transition:.6s cubic-bezier(.77,0,.175,1)
+}
+#transition-overlay.active{left:0}
+#transition-overlay.exit{left:100%}
+
+/* NAV */
+nav{
+    position:fixed;top:0;width:100%;
+    padding:30px 50px;
+    display:flex;justify-content:space-between;align-items:center;
+    background:rgba(10,10,10,.8);
+    backdrop-filter:blur(10px);
+    z-index:1000
+}
+.logo{
+    font-size:18px;font-weight:800;
+    letter-spacing:4px;
+    cursor:pointer;color:#fff
+}
+.nav-links{
+    list-style:none;
+    display:flex;
+    gap:25px
+}
+.nav-links a{
+    position:relative;
+    text-decoration:none;
+    color:var(--gray);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:2px;
+    transition:color .3s, letter-spacing .3s;
+    cursor:pointer;
+}
+
+/* ince çizgi */
+.nav-links a::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-6px;
+    width:0;
+    height:1px;
+    background:#fff;
+    transition:width .3s ease;
+}
+
+/* hover */
+.nav-links a:hover{
+    color:var(--accent);
+    letter-spacing:2.5px;
+}
+.nav-links a:hover::after{
+    width:100%;
+}
+
+/* aktif sayfa */
+.nav-links a.active-link{
+    color:var(--accent);
+}
+.nav-links a.active-link::after{
+    width:100%;
+}
+.menu-toggle{
+    display:none;
+    font-size:26px;
+    cursor:pointer
+}
+
+/* CONTENT */
+section{
+    width:100%;
+    height:100vh;
+    padding:100px 10% 40px;
+    display:none;
+    opacity:0;
+    overflow-y:auto
+}
+section.active{
+    display:flex;
+    flex-direction:column;
+    opacity:1;
+    animation:slideUp .6s ease forwards
+}
+@keyframes slideUp{
+    from{transform:translateY(15px);opacity:0}
+    to{transform:translateY(0);opacity:1}
+}
+
+/* HOME */
+#home{
+    justify-content:center;
+    background:
+      linear-gradient(to right,rgba(0,0,0,.8),transparent),
+      url('img/background_optimized.webp') center/cover no-repeat
+}
+#home h1{
+    font-size:clamp(2.5rem,8vw,6rem);
+    line-height:1;font-weight:900
+}
+
+/* ABOUT */
+.about-container{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:50px
+}
+.about-text h2{font-size:3rem;margin-bottom:25px}
+.about-text p{
+    font-size:1.1rem;
+    line-height:1.6;
+    color:#bbb;
+    margin-bottom:15px
+}
+.about-img{
+    width:80%;
+    aspect-ratio:3/4;
+    background:url('img/pp.png') center/cover no-repeat;
+    margin:0 auto
+}
+
+/* GALLERY */
+.gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:20px
+}
+.gallery-item{
+    height:350px;
+    overflow:hidden;
+    cursor:pointer
+}
+.gallery-item img{
+    width:100%;height:100%;
+    object-fit:cover;
+    transition:.6s;
+    filter:grayscale(1)
+}
+.gallery-item:hover img{
+    transform:scale(1.05);
+    filter:grayscale(0)
+}
+
+/* PROJECTS */
+.projects-content{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center
+}
+.shimmer{
+    font-size:56px;
+    letter-spacing:6px;
+    font-weight:300;
+    text-transform:uppercase;
+    background:linear-gradient(110deg,#555 40%,#fff 50%,#555 60%);
+    background-size:200% 100%;
+    color:transparent;
+    -webkit-background-clip:text;
+    animation:shimmer 3s infinite
+}
+@keyframes shimmer{
+    0%{background-position:-200%}
+    100%{background-position:200%}
+}
+
+/* FOOTER */
+footer{
+    position:fixed;
+    bottom:30px;
+    left:50px;
+    font-size:10px;
+    color:#333;
+    letter-spacing:2px
+}
+
+/* INSTAGRAM */
+.insta-float{
+    position:fixed;
+    bottom:60px;
+    left:50px;
+    z-index:9999;
+    width:36px;
+    height:36px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:.3s
+}
+.insta-float svg{
+    width:30px;
+    height:30px;
+    stroke:#fff;
+    stroke-width:2.2;
+    fill:none;
+    opacity:.75;
+    transition:.3s
+}
+.insta-float:hover svg{
+    opacity:1;
+    filter:drop-shadow(0 0 6px rgba(255,255,255,.35))
+}
+
+/* MOBILE */
+@media(max-width:768px){
+    nav{padding:20px}
+    .menu-toggle{display:block}
+    .nav-links{
+        position:fixed;
+        top:80px;
+        right:-100%;
+        width:100%;
+        height:calc(100vh - 80px);
+        background:rgba(10,10,10,.95);
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        gap:30px;
+        transition:.4s
+    }
+    .nav-links.active{right:0}
+
+    section{padding:120px 20px 40px}
+    .about-container{grid-template-columns:1fr}
+
+    footer{left:20px}
+    .insta-float{left:20px}
+}
+
+/* GALLERY FADE-IN */
+.gallery-item{
+    opacity:0;
+    transform:translateY(10px);
+    transition:opacity .6s ease, transform .6s ease;
+}
+
+.gallery-item.fade-in{
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* GALLERY HOVER INFO + OVERLAY */
+.gallery-item{
+    position:relative;
+}
+
+/* kararma */
+.gallery-item::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        to top,
+        rgba(0,0,0,.45),
+        rgba(0,0,0,0) 60%
+    );
+    opacity:0;
+    transition:opacity .4s ease;
+    pointer-events:none;
+}
+
+.gallery-item:hover::after{
+    opacity:1;
+}
+
+/* bilgi etiketi */
+.gallery-label{
+    position:absolute;
+    left:15px;
+    bottom:15px;
+    font-size:11px;
+    letter-spacing:2px;
+    color:#fff;
+    opacity:0;
+    transform:translateY(6px);
+    transition:opacity .4s ease, transform .4s ease;
+    pointer-events:none;
+}
+
+.gallery-item:hover .gallery-label{
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* SIMPLE LIGHTBOX */
+#lightbox{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.9);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+}
+
+#lightbox img{
+    max-width:90%;
+    max-height:90%;
+    animation:lightboxZoom .65s cubic-bezier(.16,1,.3,1);
+}
+
+
+@keyframes lightboxZoom{
+    from{
+        transform:scale(.88);
+        opacity:0;
+    }
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+
+
+</style>
+</head>
+
+<body>
+
+<div id="transition-overlay"></div>
+
+<nav>
+    <div class="logo" onclick="navigateTo('home')">ABDULLAH YILMAZ</div>
+    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    <ul class="nav-links">
+        <li><a href="javascript:void(0)" class="active-link" onclick="navigateTo('home',this)">Anasayfa</a></li>
+        <li><a href="javascript:void(0)" onclick="navigateTo('about',this)">Hakkımda</a></li>
+        <li><a href="javascript:void(0)" onclick="navigateTo('gallery',this)">Galeri</a></li>
+        <li><a href="javascript:void(0)" onclick="navigateTo('projects',this)">Yeni Projeler</a></li>
+    </ul>
+</nav>
+
+<section id="home" class="active">
+    <h1>IŞIK</h1>
+    <h2>ve</h2>
+    <h1>HİKAYE</h1>
+    
+</section>
+
+<section id="about">
+    <div class="about-container">
+        <div class="about-text">
+            <h2>Hakkımda</h2>
+            <p>Ben Abdullah Yılmaz,</p>
+            <p>Samsun’da doğdum, Merzifon’da yaşıyorum. Fotoğrafla yolum, gündelik hayatın içindeki küçük anları fark etmeye çalışarak kesişti. Önce cep telefonuyla, sonra 2025’te bir fotoğraf makinesiyle… Ama aslında değişmeyen tek şey merakım oldu.</p>
+            <p>Belirli bir kalıba sığmayı sevmiyorum. Yıldızlara, manzaralara, sokaklara ve karşıma çıkan beklenmedik anlara aynı dikkatle bakıyorum. Işık neredeyse, hikâye neredeyse, orada duruyorum.</p>
+            <p>Benim için fotoğraf; anı sadece görmek değil, hissetmek. Bir bakışı, bir sessizliği, bir duyguyu zamana karşı durdurma çabası.</p>
+            <p>Sadelik, duygu ve ışık bu yolculuğun vazgeçilmez parçaları.</p>
+            <p>Henüz yolun başındayım. Ama gözüm açık, kalbim merakta.</p>
+        </div>
+        <div class="about-img"></div>
+    </div>
+</section>
+
+<section id="gallery">
+    <div class="gallery-grid">
+
+
+<div class="gallery-item"><img src="galeri/0.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/1.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/2.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/3.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/4.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/5.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/6.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/7.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/8.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/9.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/10.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/11.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/12.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/13.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/14.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/15.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/16.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/17.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/18.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/19.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/20.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/21.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/22.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/23.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/24.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/25.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/26.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/27.jpg"><span class="gallery-label"></span></div>
+<div class="gallery-item"><img src="galeri/28.jpg"><span class="gallery-label"></span></div>
+
+
+
+
+    </div>
+</section>
+
+<section id="projects">
+    <div class="projects-content">
+        <h2 class="shimmer">YAKINDA</h2>
+        <p style="color:#444;margin-top:10px;">Yakında burada olacak</p>
+    </div>
+</section>
+
+<footer>ABDULLAH YILMAZ © 2025</footer>
+
+<a href="https://instagram.com/sumof_life" target="_blank" class="insta-float" aria-label="Instagram">
+  <svg viewBox="0 0 24 24">
+    <rect x="3" y="3" width="18" height="18" rx="5"/>
+    <circle cx="12" cy="12" r="4"/>
+    <circle cx="17" cy="7" r="1.2" fill="#fff" stroke="none"/>
+  </svg>
+</a>
+
+<div id="lightbox">
+    <img src="" alt="">
+</div>
+
+<script>
+function toggleMenu(){
+    document.querySelector('.nav-links').classList.toggle('active')
+}
+function navigateTo(pageId, el){
+    const overlay=document.getElementById('transition-overlay')
+    const sections=document.querySelectorAll('section')
+    const target=document.getElementById(pageId)
+    if(target.classList.contains('active'))return
+
+    document.querySelectorAll('.nav-links a')
+      .forEach(a=>a.classList.remove('active-link'))
+    if(el) el.classList.add('active-link')
+
+    overlay.classList.add('active')
+    setTimeout(()=>{
+        sections.forEach(s=>s.classList.remove('active'))
+        target.classList.add('active')
+        document.querySelector('.nav-links').classList.remove('active')
+        overlay.classList.remove('active')
+        overlay.classList.add('exit')
+	if(pageId === 'gallery') fadeInGallery();
+
+    },600)
+}
+
+function fadeInGallery(){
+    document.querySelectorAll('.gallery-item').forEach((item,i)=>{
+        setTimeout(()=>{
+            item.classList.add('fade-in')
+        }, i * 350);
+    });
+}
+
+const galleryImages = Array.from(document.querySelectorAll('.gallery-item img'));
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = lightbox.querySelector('img');
+
+let currentIndex = 0;
+
+/* galeriden aç */
+galleryImages.forEach((img, index) => {
+    img.addEventListener('click', () => {
+        currentIndex = index;
+        openLightbox();
+    });
+});
+
+function openLightbox(){
+    lightboxImg.src = galleryImages[currentIndex].src;
+    lightbox.style.display = 'flex';
+}
+
+/* fotoğrafa tıkla = sonraki */
+lightboxImg.addEventListener('click', (e) => {
+    e.stopPropagation(); // arka plan tıklaması sayılmasın
+    currentIndex++;
+
+    if(currentIndex >= galleryImages.length){
+        currentIndex = 0; // LOOP
+    }
+
+    lightboxImg.src = galleryImages[currentIndex].src;
+});
+
+/* arka plana tıkla = kapat */
+lightbox.addEventListener('click', () => {
+    lightbox.style.display = 'none';
+});
+
+/* ESC = kapat */
+document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape'){
+        lightbox.style.display = 'none';
+    }
+});
+
+</script>
+
+</body>
+</html>
